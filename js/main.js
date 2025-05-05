@@ -13,11 +13,11 @@ mergeBTN.addEventListener("click", function () {
 let quickBTN = document.getElementById("quick");
 
 quickBTN.addEventListener("click", function () {
-    window.location.href = "merge_sort.html";
+    window.location.href = "quick_sort.html";
 });
 
 let binaryBTN = document.getElementById("binary");
 
 binaryBTN.addEventListener("click", function () {
-    window.location.href = "merge_sort.html";
+    window.location.href = "binary_search.html";
 });
