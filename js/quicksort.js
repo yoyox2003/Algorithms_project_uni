@@ -74,29 +74,29 @@ function displayArray(arr, pivotIndex = -1, i = -1, j = -1, swap = [], splitInde
 // Partition function for QuickSort algorithm
 async function partition(arr, low, high) {
     let pivot = arr[low];
-    let i = low;
+    let i = low + 1;
     let j = high;
 
     // Display initial state with pivot
     displayArray([...arr], low, i, j);
     await sleep(1000);
 
-    while (i < j) {
+    while (i <= j) {
         // Move i to the right while arr[i] <= pivot
-        do {
+        while (i <= high && arr[i] <= pivot) {
             i++;
             displayArray([...arr], low, i, j);
             await sleep(500);
-        } while (i < arr.length && arr[i] <= pivot);
+        }
 
         // Move j to the left while arr[j] > pivot
-        do {
+        while (arr[j] > pivot) {
             j--;
             displayArray([...arr], low, i, j);
             await sleep(500);
-        } while (j >= 0 && arr[j] > pivot);
+        }
 
-        // Swap arr[i] and arr[j]
+        // Swap arr[i] and arr[j] if i <= j
         if (i < j) {
             [arr[i], arr[j]] = [arr[j], arr[i]];
             displayArray([...arr], low, i, j, [i, j]);
@@ -104,7 +104,7 @@ async function partition(arr, low, high) {
         }
     }
 
-    // Swap pivot into correct position
+    // Place the pivot at the correct position
     [arr[low], arr[j]] = [arr[j], arr[low]];
     displayArray([...arr], j);
     await sleep(1000);
@@ -116,8 +116,8 @@ async function partition(arr, low, high) {
 async function quickSort(arr, low, high) {
     if (low < high) {
         let j = await partition(arr, low, high);
-        await quickSort(arr, low, j);
-        await quickSort(arr, j + 1, high);
+        await quickSort(arr, low, j - 1); // Sort the left part
+        await quickSort(arr, j + 1, high); // Sort the right part
     }
 }
 
