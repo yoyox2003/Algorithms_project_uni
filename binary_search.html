@@ -3,9 +3,315 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Binary Search</title>
+        <title>Binary Search Visualizer</title>
+        <style>
+            body {
+                font-family: "Arial", sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f3f4f6;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                text-align: center;
+                overflow: auto;
+            }
+
+            .container {
+                background-color: #fff;
+                border-radius: 10px;
+                padding: 30px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                width: 80%;
+                max-width: 600px;
+                overflow-y: auto;
+                height: 90vh;
+            }
+
+            h2 {
+                font-size: 32px;
+                color: #333;
+            }
+
+            p {
+                font-size: 18px;
+                color: #555;
+            }
+
+            input {
+                padding: 10px;
+                font-size: 16px;
+                border: 2px solid #ddd;
+                border-radius: 5px;
+                width: 80%;
+                max-width: 300px;
+                margin: 10px 0;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 18px;
+                border: none;
+                background-color: #4caf50;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            button:hover {
+                background-color: #45a049;
+            }
+
+            #steps,
+            #result {
+                margin-top: 20px;
+                padding: 20px;
+                background-color: #f9fafb;
+                border-radius: 8px;
+                border: 1px solid #ddd;
+            }
+
+            #arrayContainer {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 5px;
+                margin-top: 20px;
+            }
+
+            #arrayContainer span {
+                display: inline-block;
+                width: 50px;
+                height: 50px;
+                margin: 5px;
+                padding: 15px;
+                text-align: center;
+                font-size: 18px;
+                border-radius: 8px;
+                background-color: #ddd;
+                font-weight: bold;
+            }
+
+            .out {
+                background-color: #f56565 !important;
+            }
+
+            .in {
+                background-color: #8ef5a8 !important;
+            }
+
+            .mid {
+                background-color: #ffcc00 !important;
+            }
+
+            .normal {
+                background-color: #ddd !important;
+            }
+        </style>
     </head>
+
     <body>
-        binary
+        <div class="container">
+            <h2>Binary Search Visualizer</h2>
+            <p>Enter numbers separated by commas (e.g., 3, 5, 2, 1, 6):</p>
+            <input
+                id="inputArray"
+                type="text"
+                placeholder="e.g. 3, 5, 2, 1, 6"
+            />
+            <p>Enter the key to search for:</p>
+            <input id="key" type="text" placeholder="e.g. 5" />
+            <br />
+            <button onclick="take(event)">Search</button>
+
+            <h3>Visualization:</h3>
+            <div id="arrayContainer"></div>
+
+            <h3>Steps:</h3>
+            <div id="steps"></div>
+
+            <h3>Result:</h3>
+            <div id="result"></div>
+        </div>
+
+        <script>
+            document.body.onload = initialize;
+            var array = [];
+            var squares = [];
+            var key;
+            var stepsDiv = document.getElementById("steps");
+            var resultDiv = document.getElementById("result");
+            var arrayContainer = document.getElementById("arrayContainer");
+
+            function initialize() {
+                // Initial setup
+                stepsDiv.innerHTML =
+                    "Enter an array and key to start the binary search.";
+                resultDiv.innerHTML = "Waiting for input...";
+            }
+
+            async function binarySearch(array, key) {
+                // First, sort the array since binary search requires a sorted array
+                array.sort((a, b) => a - b);
+                updateArrayDisplay();
+
+                stepsDiv.innerHTML =
+                    "<p>Starting binary search for key: " + key + "</p>";
+                stepsDiv.innerHTML +=
+                    "<p>Array has been sorted: [" + array.join(", ") + "]</p>";
+
+                let low = 0;
+                let high = array.length - 1;
+                let mid;
+                let step = 1;
+
+                async function beginSearch() {
+                    while (low <= high) {
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, 1000)
+                        );
+                        mid = Math.floor((high + low) / 2);
+
+                        // Update the visualization
+                        updateSquareClasses(low, mid, high);
+
+                        stepsDiv.innerHTML +=
+                            "<p>Step " +
+                            step +
+                            ": low = " +
+                            low +
+                            ", high = " +
+                            high +
+                            ", mid = " +
+                            mid +
+                            ", checking if " +
+                            array[mid] +
+                            " equals " +
+                            key +
+                            "</p>";
+                        step++;
+
+                        if (array[mid] == key) {
+                            squares[mid].className = "in";
+                            stepsDiv.innerHTML +=
+                                "<p>Found key at index " + mid + "!</p>";
+                            resultDiv.innerHTML =
+                                "<p>Key " +
+                                key +
+                                " was found at index " +
+                                mid +
+                                " (position " +
+                                (mid + 1) +
+                                ")</p>";
+                            return mid;
+                        } else if (array[mid] < key) {
+                            stepsDiv.innerHTML +=
+                                "<p>Key " +
+                                key +
+                                " is greater than " +
+                                array[mid] +
+                                ", searching right half</p>";
+                            low = mid + 1;
+                        } else {
+                            stepsDiv.innerHTML +=
+                                "<p>Key " +
+                                key +
+                                " is less than " +
+                                array[mid] +
+                                ", searching left half</p>";
+                            high = mid - 1;
+                        }
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, 1000)
+                        );
+                    }
+
+                    stepsDiv.innerHTML += "<p>Key not found in array</p>";
+                    resultDiv.innerHTML =
+                        "<p>Key " + key + " was not found in the array</p>";
+
+                    // Turn all boxes red to indicate not found
+                    for (let i = 0; i < squares.length; i++) {
+                        squares[i].className = "out";
+                    }
+
+                    return -1; // not found
+                }
+                return beginSearch();
+            }
+
+            function updateSquareClasses(low, mid, high) {
+                for (let i = 0; i < squares.length; i++) {
+                    if (i === mid) {
+                        squares[i].className = "mid"; // Current middle element
+                    } else if (i >= low && i <= high) {
+                        squares[i].className = "normal"; // Elements in current search range
+                    } else {
+                        squares[i].className = "out"; // Elements outside current search range
+                    }
+                }
+            }
+
+            function take(event) {
+                if (event) {
+                    event.preventDefault();
+                }
+
+                // Clear previous results
+                stepsDiv.innerHTML = "";
+                resultDiv.innerHTML = "";
+                arrayContainer.innerHTML = "";
+
+                squares = [];
+                array = [];
+
+                // Get input array and key
+                let input = document
+                    .getElementById("inputArray")
+                    .value.split(",");
+                for (let i = 0; i < input.length; i++) {
+                    let num = parseInt(input[i].trim());
+                    if (!isNaN(num)) {
+                        array.push(num);
+                    }
+                }
+
+                // Sort the array (binary search requires sorted array)
+                array.sort((a, b) => a - b);
+
+                // Get the key to search for
+                let keyInput = document.getElementById("key").value;
+                key = parseInt(keyInput);
+
+                if (isNaN(key)) {
+                    resultDiv.innerHTML =
+                        "<p>Please enter a valid number for the key</p>";
+                    return;
+                }
+
+                if (array.length === 0) {
+                    resultDiv.innerHTML = "<p>Please enter a valid array</p>";
+                    return;
+                }
+
+                updateArrayDisplay();
+                binarySearch(array, key);
+            }
+
+            function updateArrayDisplay() {
+                arrayContainer.innerHTML = "";
+                squares = [];
+
+                for (let i = 0; i < array.length; i++) {
+                    let square = document.createElement("span");
+                    square.innerHTML = array[i];
+                    square.className = "normal";
+                    squares.push(square);
+                    arrayContainer.appendChild(square);
+                }
+            }
+        </script>
     </body>
 </html>
