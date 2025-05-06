@@ -37,6 +37,14 @@
             display: flex;
             gap: 2px;
         }
+
+        #complexityInfo {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 
@@ -54,17 +62,25 @@
         <input type="submit"></input>
     </form>
 
-
-
     <div id="container">
 
     </div>
+
+
+    <div id="complexityInfo">
+        <h3>Binary Search Complexity:</h3>
+        <p><strong>Average Time Complexity:</strong> O(log n)</p>
+        <p><strong>Best Time Complexity:</strong> O(1)</p>
+        <p><strong>Worst Time Complexity:</strong> O(log n)</p>
+    </div>
+
     <script>
         document.body.onload = addElement;
         const container = document.getElementById("container");
         var array = [];
         var squares = [];
         var key;
+
         function binarySearch(array, key) {
             let low = 0;
             let high = array.length - 1;
@@ -76,18 +92,17 @@
                     mid = Math.floor((high + low) / 2);
                     if (array[mid] == key) {
                         squares[mid].className = "in";
-                        console.log("lol");
+                        console.log("Found!");
                         return mid;
-
                     }
                     else if (array[mid] < key) {
                         turnRed(mid, true);
-                        console.log("lolx");
+                        console.log("Move right");
                         low = mid + 1;
                     }
                     else {
                         turnRed(mid, false);
-                        console.log("loly");
+                        console.log("Move left");
                         high = mid - 1;
                     }
                     await new Promise(resolve => setTimeout(resolve, 500));
@@ -97,6 +112,7 @@
             }
             return beginSearch();
         }
+
         var input;
 
         function take(event) {
@@ -112,20 +128,14 @@
             for (var i = 0; i < input.length; i++) {
                 array.push(parseInt(input[i].trim()));
             }
-            for (var i = 0; i < array.length; i++) {
-                console.log(` ${array[i]}`);
-            }
             addElement();
             var x = document.getElementById("key").value;
             key = parseInt(x);
             console.log(key);
             binarySearch(array, key);
-
         }
 
-
         function addElement() {
-
             for (var i = 0; i < array.length; i++) {
                 squares[i] = document.createElement("div");
                 squares[i].innerHTML = `${array[i]}`;
@@ -142,19 +152,17 @@
             }
             else {
                 for (var i = index; i < squares.length; i++) {
-                    console.log(i);
                     squares[i].className = "out";
                 }
             }
         }
+
         function turnAllRed() {
             for (var i = 0; i < squares.length; i++) {
                 squares[i].className = "out";
             }
         }
-
     </script>
-
 </body>
 
 </html>

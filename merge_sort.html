@@ -70,11 +70,19 @@
             min-width: 70px;
             font-size: 15px;
         }
-        
+
+        #complexityInfo {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
         .split {
             border-color: #4f8ef7;
         }
-        
+
         .merge {
             border-color: #4CAF50;
             background-color: #f0fff0;
@@ -93,11 +101,18 @@
 
     <div id="tree" class="tree"></div>
 
+    <div id="complexityInfo">
+        <h3>Binary Search Complexity:</h3>
+        <p><strong>Average Time Complexity:</strong> O(n log n)</p>
+        <p><strong>Best Time Complexity:</strong> O(n log n)</p>
+        <p><strong>Worst Time Complexity:</strong> O(n log n)</p>
+    </div>
+
     <script>
 
         let inputArray = [];
         const treeData = [];
-        
+
 
         function mergeSortTree(arr, level = 0, isSplit = true) {
 
@@ -106,20 +121,20 @@
                 values: arr.slice(),
                 isSplit: isSplit
             });
-            
+
 
             if (arr.length <= 1) {
                 return arr;
             }
-            
+
 
             const mid = Math.floor(arr.length / 2);
             const left = mergeSortTree(arr.slice(0, mid), level + 1, true);
             const right = mergeSortTree(arr.slice(mid), level + 1, true);
-            
+
 
             const result = merge(left, right);
-            
+
 
             if (arr.length > 1) {
                 if (!treeData[level + 1]) treeData[level + 1] = [];
@@ -128,16 +143,16 @@
                     isSplit: false
                 });
             }
-            
+
             return result;
         }
-        
+
 
         function merge(left, right) {
             const result = [];
             let leftIndex = 0;
             let rightIndex = 0;
-            
+
 
             while (leftIndex < left.length && rightIndex < right.length) {
                 if (left[leftIndex] <= right[rightIndex]) {
@@ -148,64 +163,67 @@
                     rightIndex++;
                 }
             }
-            
+
 
             return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
         }
-        
+
 
         function renderTree() {
             const treeDiv = document.getElementById("tree");
             treeDiv.innerHTML = '';
-            
+
 
             const processedTree = [];
-            
-  
+
+
             for (let i = 0; i < treeData.length; i++) {
                 if (!processedTree[i]) processedTree[i] = [];
-                
+
                 treeData[i].forEach(node => {
                     if (node.isSplit) {
                         processedTree[i].push(node);
                     }
                 });
             }
-            
+
 
             let mergeLevel = processedTree.length;
             for (let i = treeData.length - 1; i >= 0; i--) {
                 if (!processedTree[mergeLevel]) processedTree[mergeLevel] = [];
-                
+
                 treeData[i].forEach(node => {
                     if (!node.isSplit) {
                         processedTree[mergeLevel].push(node);
                     }
                 });
-                
+
                 if (processedTree[mergeLevel].length > 0) {
                     mergeLevel++;
                 }
             }
-            
+
 
             processedTree.forEach((levelNodes, level) => {
                 if (levelNodes.length === 0) return;
-                
+
                 const levelDiv = document.createElement("div");
                 levelDiv.className = "level";
-                
+
                 levelNodes.forEach(node => {
                     const nodeDiv = document.createElement("div");
                     nodeDiv.className = node.isSplit ? "node split" : "node merge";
                     nodeDiv.textContent = `[${node.values.join(", ")}]`;
                     levelDiv.appendChild(nodeDiv);
                 });
-                
+
+                setTimeout(() => {
+                    console.log("This runs after 2 seconds");
+                }, 2000);
                 treeDiv.appendChild(levelDiv);
             });
         }
-        
+
 
         function visualize() {
             const inputStr = document.getElementById("arrayInput").value;
@@ -213,14 +231,14 @@
                 alert("Please enter a valid array.");
                 return;
             }
-            
+
 
             inputArray = inputStr.split(",").map(x => parseInt(x.trim())).filter(x => !isNaN(x));
             treeData.length = 0;
-            
+
 
             mergeSortTree(inputArray);
-            
+
 
             renderTree();
         }
