@@ -1,11 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Merge Sort</title>
-    </head>
-    <body>
-        <script>'/js/mergesort.js'</script>
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Merge Sort Tree Visualization</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px 20px;
+            background-color: #eef2f7;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 28px;
+            color: #333;
+        }
+
+        form {
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            width: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        button {
+            padding: 10px 16px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #4f8ef7;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #376fd1;
+        }
+
+        .tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .level {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .node {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+            min-width: 70px;
+            font-size: 15px;
+        }
+        
+        .split {
+            border-color: #4f8ef7;
+        }
+        
+        .merge {
+            border-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Merge Sort Tree Visualization</h2>
+
+    <form id="inputForm" onsubmit="event.preventDefault(); visualize();">
+        <input type="text" id="arrayInput" placeholder="Enter numbers, e.g. 38,27,43,3,9" />
+        <button type="submit">Visualize</button>
+    </form>
+
+    <div id="tree" class="tree"></div>
+
+    <script>
+
+        let inputArray = [];
+        const treeData = [];
+        
+
+        function mergeSortTree(arr, level = 0, isSplit = true) {
+
+            if (!treeData[level]) treeData[level] = [];
+            treeData[level].push({
+                values: arr.slice(),
+                isSplit: isSplit
+            });
+            
+
+            if (arr.length <= 1) {
+                return arr;
+            }
+            
+
+            const mid = Math.floor(arr.length / 2);
+            const left = mergeSortTree(arr.slice(0, mid), level + 1, true);
+            const right = mergeSortTree(arr.slice(mid), level + 1, true);
+            
+
+            const result = merge(left, right);
+            
+
+            if (arr.length > 1) {
+                if (!treeData[level + 1]) treeData[level + 1] = [];
+                treeData[level + 1].push({
+                    values: result.slice(),
+                    isSplit: false
+                });
+            }
+            
+            return result;
+        }
+        
+
+        function merge(left, right) {
+            const result = [];
+            let leftIndex = 0;
+            let rightIndex = 0;
+            
+
+            while (leftIndex < left.length && rightIndex < right.length) {
+                if (left[leftIndex] <= right[rightIndex]) {
+                    result.push(left[leftIndex]);
+                    leftIndex++;
+                } else {
+                    result.push(right[rightIndex]);
+                    rightIndex++;
+                }
+            }
+            
+
+            return result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
+        }
+        
+
+        function renderTree() {
+            const treeDiv = document.getElementById("tree");
+            treeDiv.innerHTML = '';
+            
+
+            const processedTree = [];
+            
+  
+            for (let i = 0; i < treeData.length; i++) {
+                if (!processedTree[i]) processedTree[i] = [];
+                
+                treeData[i].forEach(node => {
+                    if (node.isSplit) {
+                        processedTree[i].push(node);
+                    }
+                });
+            }
+            
+
+            let mergeLevel = processedTree.length;
+            for (let i = treeData.length - 1; i >= 0; i--) {
+                if (!processedTree[mergeLevel]) processedTree[mergeLevel] = [];
+                
+                treeData[i].forEach(node => {
+                    if (!node.isSplit) {
+                        processedTree[mergeLevel].push(node);
+                    }
+                });
+                
+                if (processedTree[mergeLevel].length > 0) {
+                    mergeLevel++;
+                }
+            }
+            
+
+            processedTree.forEach((levelNodes, level) => {
+                if (levelNodes.length === 0) return;
+                
+                const levelDiv = document.createElement("div");
+                levelDiv.className = "level";
+                
+                levelNodes.forEach(node => {
+                    const nodeDiv = document.createElement("div");
+                    nodeDiv.className = node.isSplit ? "node split" : "node merge";
+                    nodeDiv.textContent = `[${node.values.join(", ")}]`;
+                    levelDiv.appendChild(nodeDiv);
+                });
+                
+                treeDiv.appendChild(levelDiv);
+            });
+        }
+        
+
+        function visualize() {
+            const inputStr = document.getElementById("arrayInput").value;
+            if (!inputStr.trim()) {
+                alert("Please enter a valid array.");
+                return;
+            }
+            
+
+            inputArray = inputStr.split(",").map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+            treeData.length = 0;
+            
+
+            mergeSortTree(inputArray);
+            
+
+            renderTree();
+        }
+    </script>
+
+</body>
+
 </html>
