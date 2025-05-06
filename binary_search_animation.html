@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search</title>
+    <style>
+        .out {
+            height: 50px;
+            width: 50px;
+            border: 2px solid black;
+            color: black;
+            text-align: center;
+            background-color: #ff4444;
+        }
+
+        .in {
+            height: 50px;
+            width: 50px;
+            border: 2px solid black;
+            color: black;
+            text-align: center;
+            background-color: #44ff44;
+        }
+
+        .normal {
+            height: 50px;
+            width: 50px;
+            border: 2px solid black;
+            color: black;
+            text-align: center;
+            background-color: white;
+        }
+
+        #container {
+            display: flex;
+            gap: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <form onsubmit="take(event)">
+        <label for="inputArray">Enter numbers separated by commas (e.g., 3,5,2,1,6): </label>
+        <br>
+        <input id="inputArray" type="text">
+        <br>
+        <label for="key">Enter Key</label>
+        <br>
+        <input id="key" type="text">
+        <br>
+
+        <input type="submit"></input>
+    </form>
+
+
+
+    <div id="container">
+
+    </div>
+    <script>
+        document.body.onload = addElement;
+        const container = document.getElementById("container");
+        var array = [];
+        var squares = [];
+        var key;
+        function binarySearch(array, key) {
+            let low = 0;
+            let high = array.length - 1;
+            let mid = Math.floor((high + low) / 2);
+
+            async function beginSearch() {
+                while (low <= high) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    mid = Math.floor((high + low) / 2);
+                    if (array[mid] == key) {
+                        squares[mid].className = "in";
+                        console.log("lol");
+                        return mid;
+
+                    }
+                    else if (array[mid] < key) {
+                        turnRed(mid, true);
+                        console.log("lolx");
+                        low = mid + 1;
+                    }
+                    else {
+                        turnRed(mid, false);
+                        console.log("loly");
+                        high = mid - 1;
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                turnAllRed();
+                return -1; // not found
+            }
+            return beginSearch();
+        }
+        var input;
+
+        function take(event) {
+            for (var i = 0; i < squares.length; i++) {
+                squares[i].remove();
+            }
+            squares = [];
+            array = [];
+            key = -1;
+            event.preventDefault();
+            input = document.getElementById("inputArray").value;
+            input = input.split(",");
+            for (var i = 0; i < input.length; i++) {
+                array.push(parseInt(input[i].trim()));
+            }
+            for (var i = 0; i < array.length; i++) {
+                console.log(` ${array[i]}`);
+            }
+            addElement();
+            var x = document.getElementById("key").value;
+            key = parseInt(x);
+            console.log(key);
+            binarySearch(array, key);
+
+        }
+
+
+        function addElement() {
+
+            for (var i = 0; i < array.length; i++) {
+                squares[i] = document.createElement("div");
+                squares[i].innerHTML = `${array[i]}`;
+                squares[i].className = "normal";
+                container.appendChild(squares[i]);
+            }
+        }
+
+        function turnRed(index, flag) {
+            if (flag) {
+                for (var i = 0; i <= index; i++) {
+                    squares[i].className = "out";
+                }
+            }
+            else {
+                for (var i = index; i < squares.length; i++) {
+                    console.log(i);
+                    squares[i].className = "out";
+                }
+            }
+        }
+        function turnAllRed() {
+            for (var i = 0; i < squares.length; i++) {
+                squares[i].className = "out";
+            }
+        }
+
+    </script>
+
+</body>
+
+</html>
