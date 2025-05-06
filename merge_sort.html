@@ -102,7 +102,7 @@
     <div id="tree" class="tree"></div>
 
     <div id="complexityInfo">
-        <h3>Binary Search Complexity:</h3>
+        <h3>Merge sort Complexity:</h3>
         <p><strong>Average Time Complexity:</strong> O(n log n)</p>
         <p><strong>Best Time Complexity:</strong> O(n log n)</p>
         <p><strong>Worst Time Complexity:</strong> O(n log n)</p>
@@ -169,14 +169,13 @@
         }
 
 
-        function renderTree() {
+        async function renderTree() {
             const treeDiv = document.getElementById("tree");
             treeDiv.innerHTML = '';
 
-
             const processedTree = [];
 
-
+            // Separate split and merge nodes
             for (let i = 0; i < treeData.length; i++) {
                 if (!processedTree[i]) processedTree[i] = [];
 
@@ -186,7 +185,6 @@
                     }
                 });
             }
-
 
             let mergeLevel = processedTree.length;
             for (let i = treeData.length - 1; i >= 0; i--) {
@@ -203,9 +201,10 @@
                 }
             }
 
-
-            processedTree.forEach((levelNodes, level) => {
-                if (levelNodes.length === 0) return;
+            // Render each level with a delay
+            for (let level = 0; level < processedTree.length; level++) {
+                const levelNodes = processedTree[level];
+                if (levelNodes.length === 0) continue;
 
                 const levelDiv = document.createElement("div");
                 levelDiv.className = "level";
@@ -217,30 +216,28 @@
                     levelDiv.appendChild(nodeDiv);
                 });
 
-                setTimeout(() => {
-                    console.log("This runs after 2 seconds");
-                }, 2000);
                 treeDiv.appendChild(levelDiv);
-            });
+
+
+                await new Promise(resolve => setTimeout(resolve, 900));
+            }
         }
 
 
-        function visualize() {
+
+        async function visualize() {
             const inputStr = document.getElementById("arrayInput").value;
             if (!inputStr.trim()) {
                 alert("Please enter a valid array.");
                 return;
             }
 
-
             inputArray = inputStr.split(",").map(x => parseInt(x.trim())).filter(x => !isNaN(x));
             treeData.length = 0;
 
-
             mergeSortTree(inputArray);
 
-
-            renderTree();
+            await renderTree(); // Wait for the animation to finish
         }
     </script>
 
